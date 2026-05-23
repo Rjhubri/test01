@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page 1 - Upload Image</title>
+</head>
+<body>
+
+    <h1>Upload Image to Firebase</h1>
+
+    <input type="file" id="imageFile">
+    <button onclick="uploadImage()">Upload</button>
+
+    <p id="status"></p>
+
+    <!-- Firebase -->
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+        import {
+            getStorage,
+            ref,
+            uploadBytesResumable
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCK441SC8B07BXhQENZW41C2mRRmvzEU0",
+            authDomain: "first-test-e0d11.firebaseapp.com",
+            projectId: "first-test-e0d11",
+            storageBucket: "first-test-e0d11.firebasestorage.app",
+            messagingSenderId: "10063949234",
+            appId: "1:10063949234:web:97e0181722a48deb95c8ab",
+            measurementId: "G-6R5W00HHPK"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Storage
+        const storage = getStorage(app);
+
+        // Upload Function
+        window.uploadImage = function () {
+
+            const file = document.getElementById("imageFile").files[0];
+
+            if (!file) {
+                alert("Please select image");
+                return;
+            }
+
+            document.getElementById("status").innerText =
+                "Uploading...";
+
+            const storageRef = ref(storage, "images/" + file.name);
+
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on(
+
+                "state_changed",
+
+                (snapshot) => {
+
+                    const progress =
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+                    document.getElementById("status").innerText =
+                        "Uploading: " + Math.round(progress) + "%";
+
+                },
+
+                (error) => {
+
+                    document.getElementById("status").innerText =
+                        "Error: " + error.message;
+
+                },
+
+                () => {
+
+                    document.getElementById("status").innerText =
+                        "Done Upload";
+
+                    setTimeout(() => {
+
+                        location.reload();
+
+                    }, 2000);
+
+                }
+
+            );
+
+        };
+
+    </script>
+
+</body>
+</html>
